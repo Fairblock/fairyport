@@ -1,0 +1,11 @@
+FairyRingNode:
+  ip: "0.0.0.0"
+  port: 26657
+  protocol: "tcp"
+
+DestinationNode:
+  ip: "0.0.0.0"
+  port: 26659
+  protocol: "tcp"
+
+Mnemonic: "cruise scene law sea push expose scorpion wire trick repair wave quote task dose inner denial alpha favorite certain blouse motion flash split lunch"

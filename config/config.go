@@ -1,0 +1,51 @@
+package config
+
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/spf13/viper"
+)
+
+type Config struct {
+	FairyRingNode   Node
+	DestinationNode Node
+	Mnemonic        string
+}
+
+type Node struct {
+	IP       string
+	Port     int64
+	Protocol string
+}
+
+func (c *Config) SetConfig() {
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	viper.SetConfigType("yml")
+
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file, %s", err)
+	}
+
+	//viper.SetDefault("")
+
+	err := viper.Unmarshal(c)
+	if err != nil {
+		panic(err)
+	}
+
+	// fmt.Println(c.FairyRingNode)
+	// fmt.Println(c.DestinationNode)
+	fmt.Println(c.Mnemonic)
+}
+
+func (c *Config) GetDestinationNodeURI() string {
+	nodeURI := c.DestinationNode.Protocol + "://" + c.DestinationNode.IP + ":" + strconv.FormatInt(c.DestinationNode.Port, 10)
+	return nodeURI
+}
+
+func (c *Config) GetFairyNodeURI() string {
+	nodeURI := c.FairyRingNode.Protocol + "://" + c.FairyRingNode.IP + ":" + strconv.FormatInt(c.FairyRingNode.Port, 10)
+	return nodeURI
+}

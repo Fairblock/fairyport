@@ -15,6 +15,12 @@ func NewSerice() error {
 	var config config.Config
 	config.SetConfig()
 
+	// Initialize account
+	InitializeAccount(config)
+
+	// Initialize GRPC Server
+	InitializeGRPCServer(config)
+
 	fairyNodeURI := config.GetFairyNodeURI()
 
 	// get new client instance from node address
@@ -58,5 +64,4 @@ func NewSerice() error {
 
 	select {} // block forever
 
-	return nil
 }

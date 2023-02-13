@@ -49,3 +49,12 @@ func (c *Config) GetFairyNodeURI() string {
 	nodeURI := c.FairyRingNode.Protocol + "://" + c.FairyRingNode.IP + ":" + strconv.FormatInt(c.FairyRingNode.Port, 10)
 	return nodeURI
 }
+
+func (c *Config) GetMnemonic() string {
+	return c.Mnemonic
+}
+
+func (c *Config) GetGRPCEndPoint() string {
+	ep := c.FairyRingNode.IP + strconv.FormatInt(c.FairyRingNode.Port, 10)
+	return ep
+}

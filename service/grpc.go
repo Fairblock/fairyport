@@ -27,7 +27,7 @@ func InitializeGRPCServer(config config.Config) {
 
 	grpcConn = conn
 
-	defer grpcConn.Close()
+	// defer grpcConn.Close()
 }
 
 func InitializeAuthClient() {

@@ -17,6 +17,7 @@ type Node struct {
 	IP       string
 	Port     int64
 	Protocol string
+	GRPCPort int64
 }
 
 func (c *Config) SetConfig() {
@@ -55,6 +56,6 @@ func (c *Config) GetMnemonic() string {
 }
 
 func (c *Config) GetGRPCEndPoint() string {
-	ep := c.FairyRingNode.IP + strconv.FormatInt(c.FairyRingNode.Port, 10)
+	ep := c.DestinationNode.IP + ":" + strconv.FormatInt(c.DestinationNode.GRPCPort, 10)
 	return ep
 }

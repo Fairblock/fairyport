@@ -5,9 +5,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"strconv"
 
 	fbtypes "github.com/FairBlock/fairy-bridge/types"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 
 	"github.com/FairBlock/fairy-bridge/config"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -15,13 +17,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/types/tx"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
+	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/go-bip39"
 	tendermintTypes "github.com/tendermint/tendermint/types"
 )
 
 var priv1 secp256k1.PrivKey
 var addr1 sdk.AccAddress
+var seqNo uint64 = 0
 
 func InitializeAccount(config config.Config) {
 	seed, err := bip39.NewSeedWithErrorChecking(config.GetMnemonic(), "")
@@ -39,7 +44,8 @@ func InitializeAccount(config config.Config) {
 	fmt.Println("Derivation Path: ", path)
 	fmt.Println("Private Key: ", hex.EncodeToString(priv))
 
-	priv1 = secp256k1.PrivKey(priv)
+	// cryptotypes.PrivKey(priv)
+	priv1 = secp256k1.PrivKey{Key: priv}
 	pub := priv1.PubKey()
 	addr1 = sdk.AccAddress(pub.Address())
 
@@ -48,7 +54,9 @@ func InitializeAccount(config config.Config) {
 }
 
 func processBlock(block tendermintTypes.EventDataNewBlock) {
-	//fairyHeight := block.Block.Header.Height
+	fairyHeight := block.Block.Header.Height
+	fmt.Println(fairyHeight)
+	sendTx(strconv.FormatInt(fairyHeight, 10))
 
 }
 
@@ -63,26 +71,136 @@ func sendTx(height string) error {
 
 	err := txBuilder.SetMsgs(msg)
 	if err != nil {
+		fmt.Println("1: ", err)
 		return err
 	}
 
-	// txBuilder.SetGasLimit(...)
+	txBuilder.SetGasLimit(100000)
 	// txBuilder.SetFeeAmount(...)
 	// txBuilder.SetMemo(...)
 	// txBuilder.SetTimeoutHeight(...)
 
-	rsp, err := authClient.Account(
+	var sigsV2 []signing.SignatureV2
+	sigV2 := signing.SignatureV2{
+		PubKey: priv1.PubKey(),
+		Data: &signing.SingleSignatureData{
+			SignMode:  encCfg.TxConfig.SignModeHandler().DefaultMode(),
+			Signature: nil,
+		},
+		Sequence: seqNo,
+	}
+
+	sigsV2 = append(sigsV2, sigV2)
+
+	err = txBuilder.SetSignatures(sigsV2...)
+	if err != nil {
+		fmt.Println("2: ", err)
+		return err
+	}
+
+	sigsV2 = []signing.SignatureV2{}
+	signerData := xauthsigning.SignerData{
+		ChainID:       "destination",
+		AccountNumber: 1,
+		Sequence:      seqNo,
+	}
+
+	sigV2, err = secondSigning(encCfg.TxConfig.SignModeHandler().DefaultMode(), signerData,
+		txBuilder, priv1, encCfg.TxConfig, seqNo)
+
+	if err != nil {
+		fmt.Println("2.1: ", err)
+		return err
+	}
+
+	sigsV2 = append(sigsV2, sigV2)
+
+	err = txBuilder.SetSignatures(sigsV2...)
+	if err != nil {
+		fmt.Println("2.2: ", err)
+		return err
+	}
+
+	// Generated Protobuf-encoded bytes.
+	txBytes, err := encCfg.TxConfig.TxEncoder()(txBuilder.GetTx())
+	if err != nil {
+		fmt.Println("3: ", err)
+		return err
+	}
+
+	fmt.Println(len(txBytes))
+
+	txClient := tx.NewServiceClient(grpcConn)
+	// We then call the BroadcastTx method on this client.
+	grpcRes, err := txClient.BroadcastTx(
 		context.Background(),
-		&types.QueryAccountRequest{
-			Address: addr1.String(),
+		&tx.BroadcastTxRequest{
+			Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
+			TxBytes: txBytes, // Proto-binary of the signed transaction
 		},
 	)
+	if err != nil {
+		fmt.Println("5: ", err)
+		return err
+	}
 
-	rsp.
+	fmt.Println(grpcRes.TxResponse)
+	// fmt.Println(grpcRes.TxResponse.Code) // Should be `0` if the tx is successful
+	seqNo = seqNo + 1
 
 	return nil
 }
 
 func getKeysFromMnemonic() (cryptotypes.PrivKey, cryptotypes.PubKey, sdk.AccAddress) {
 	return testdata.KeyTestPubAddr()
+}
+
+// func getAccSeq() {
+// 	rsp, err := authClient.Account(
+// 		context.Background(),
+// 		&types.QueryAccountRequest{
+// 			Address: addr1.String(),
+// 		},
+// 	)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	var acc types.AccountI
+// 	acc = rsp.Account.(types.AccountI)
+// }
+
+func secondSigning(signMode signing.SignMode,
+	signerData xauthsigning.SignerData,
+	txBuilder client.TxBuilder,
+	priv secp256k1.PrivKey,
+	txConfig client.TxConfig,
+	accSeq uint64) (signing.SignatureV2, error) {
+	var sigV2 signing.SignatureV2
+
+	// Generate the bytes to be signed.
+	signBytes, err := txConfig.SignModeHandler().GetSignBytes(signMode, signerData, txBuilder.GetTx())
+	if err != nil {
+		return sigV2, err
+	}
+
+	// Sign those bytes
+	signature, err := priv.Sign(signBytes)
+	if err != nil {
+		return sigV2, err
+	}
+
+	// Construct the SignatureV2 struct
+	sigData := signing.SingleSignatureData{
+		SignMode:  signMode,
+		Signature: signature,
+	}
+
+	sigV2 = signing.SignatureV2{
+		PubKey:   priv.PubKey(),
+		Data:     &sigData,
+		Sequence: accSeq,
+	}
+
+	return sigV2, nil
 }

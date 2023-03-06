@@ -7,7 +7,6 @@ import (
 
 	"github.com/FairBlock/fairy-bridge/config"
 	cosmosClient "github.com/cosmos/cosmos-sdk/client"
-	tendermintTypes "github.com/tendermint/tendermint/types"
 )
 
 func NewSerice() error {
@@ -55,10 +54,16 @@ func NewSerice() error {
 	go func() {
 		for data := range rsp {
 			// get event data
-			var block tendermintTypes.EventDataNewBlock = data.Data.(tendermintTypes.EventDataNewBlock)
+			// var block tendermintTypes.EventDataNewBlock = data.Data.(tendermintTypes.EventDataNewBlock)
+
+			// get event data
+			events := data.Events
 
 			// process the block
-			processBlock(block)
+			// processBlock(block)
+
+			// process the events
+			processEvents(events)
 		}
 	}()
 

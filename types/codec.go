@@ -10,7 +10,7 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSubmitEncryptedTx{}, "fairblock/SubmitEncryptedTx", nil)
 	cdc.RegisterConcrete(&MsgSendCurrentHeight{}, "fairblock/SendCurrentHeight", nil)
-	cdc.RegisterConcrete(&MsgRegisterHeight{}, "fairblock/RegisterHeight", nil)
+	cdc.RegisterConcrete(&MsgCreateAggregatedKeyShare{}, "fairblock/CreateAggregatedKeyShare", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -22,7 +22,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgSendCurrentHeight{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgRegisterHeight{},
+		&MsgCreateAggregatedKeyShare{},
 	)
 	// this line is used by starport scaffolding # 3
 

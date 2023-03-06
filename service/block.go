@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
-	"strconv"
 
 	fbtypes "github.com/FairBlock/fairy-bridge/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -56,18 +55,18 @@ func InitializeAccount(config config.Config) {
 func processBlock(block tendermintTypes.EventDataNewBlock) {
 	fairyHeight := block.Block.Header.Height
 	fmt.Println(fairyHeight)
-	sendTx(strconv.FormatInt(fairyHeight, 10))
+	// sendTx(uint64(fairyHeight))
 
 }
 
-func sendTx(height string) error {
+func sendTx(height uint64, data string) error {
 	// Choose the codec
 	encCfg := simapp.MakeTestEncodingConfig()
 
 	// Create a new TxBuilder.
 	txBuilder := encCfg.TxConfig.NewTxBuilder()
 
-	msg := fbtypes.NewMsgRegisterHeight(addr1.String(), height)
+	msg := fbtypes.NewMsgCreateAggregatedKeyShare(addr1.String(), height, data)
 
 	err := txBuilder.SetMsgs(msg)
 	if err != nil {

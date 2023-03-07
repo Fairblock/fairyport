@@ -12,15 +12,12 @@ import (
 
 	"github.com/FairBlock/fairy-bridge/config"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/go-bip39"
-	tendermintTypes "github.com/tendermint/tendermint/types"
 )
 
 var priv1 secp256k1.PrivKey
@@ -50,13 +47,6 @@ func InitializeAccount(config config.Config) {
 
 	// priv1, _, addr1 = testdata.KeyTestPubAddr()
 	fmt.Println(addr1.String())
-}
-
-func processBlock(block tendermintTypes.EventDataNewBlock) {
-	fairyHeight := block.Block.Header.Height
-	fmt.Println(fairyHeight)
-	// sendTx(uint64(fairyHeight))
-
 }
 
 func sendTx(height uint64, data string) error {
@@ -148,10 +138,6 @@ func sendTx(height uint64, data string) error {
 	seqNo = seqNo + 1
 
 	return nil
-}
-
-func getKeysFromMnemonic() (cryptotypes.PrivKey, cryptotypes.PubKey, sdk.AccAddress) {
-	return testdata.KeyTestPubAddr()
 }
 
 // func getAccSeq() {

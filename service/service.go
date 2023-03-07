@@ -53,14 +53,9 @@ func NewSerice() error {
 	// On NewBlock event
 	go func() {
 		for data := range rsp {
-			// get event data
-			// var block tendermintTypes.EventDataNewBlock = data.Data.(tendermintTypes.EventDataNewBlock)
 
 			// get event data
 			events := data.Events
-
-			// process the block
-			// processBlock(block)
 
 			// process the events
 			processEvents(events)

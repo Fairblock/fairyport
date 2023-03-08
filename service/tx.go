@@ -22,7 +22,8 @@ import (
 
 var priv1 secp256k1.PrivKey
 var addr1 sdk.AccAddress
-var seqNo uint64 = 0
+var seqNo uint64
+var accNo uint64
 
 func InitializeAccount(config config.Config) {
 	seed, err := bip39.NewSeedWithErrorChecking(config.GetMnemonic(), "")
@@ -44,6 +45,8 @@ func InitializeAccount(config config.Config) {
 	priv1 = secp256k1.PrivKey{Key: priv}
 	pub := priv1.PubKey()
 	addr1 = sdk.AccAddress(pub.Address())
+
+	GetAccDetails(config)
 
 	// priv1, _, addr1 = testdata.KeyTestPubAddr()
 	fmt.Println(addr1.String())
@@ -90,7 +93,7 @@ func sendTx(height uint64, data string) error {
 	sigsV2 = []signing.SignatureV2{}
 	signerData := xauthsigning.SignerData{
 		ChainID:       "destination",
-		AccountNumber: 1,
+		AccountNumber: accNo,
 		Sequence:      seqNo,
 	}
 

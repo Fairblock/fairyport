@@ -1,8 +1,8 @@
-package service
+package events
 
 import "strconv"
 
-func processEvents(events map[string][]string) {
+func ProcessEvents(events map[string][]string) (uint64, string) {
 	var height uint64
 	var data string
 	attrs, found := events["keyshare-aggregated.keyshare-aggregated-block-height"]
@@ -15,5 +15,6 @@ func processEvents(events map[string][]string) {
 		data = attrs[0]
 	}
 
-	sendTx(height, data)
+	return height, data
+	// sendTx(height, data)
 }

@@ -35,10 +35,6 @@ func (c *Config) SetConfig() {
 	if err != nil {
 		panic(err)
 	}
-
-	// fmt.Println(c.FairyRingNode)
-	// fmt.Println(c.DestinationNode)
-	fmt.Println(c.Mnemonic)
 }
 
 func (c *Config) GetDestinationNodeURI() string {

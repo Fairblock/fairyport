@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/FairBlock/fairy-bridge/pkg/account"
-	fbtypes "github.com/FairBlock/fairy-bridge/types"
+	"github.com/FairBlock/fairyport/pkg/account"
+	fbtypes "github.com/FairBlock/fairyport/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/simapp"

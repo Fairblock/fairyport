@@ -1,10 +1,9 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package main
 
-import "github.com/FairBlock/fairy-bridge/cmd"
+import "github.com/FairBlock/fairyport/cmd"
 
 func main() {
 	cmd.Execute()

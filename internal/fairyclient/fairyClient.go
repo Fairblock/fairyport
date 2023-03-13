@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/FairBlock/fairy-bridge/internal/events"
-	"github.com/FairBlock/fairy-bridge/pkg/account"
-	"github.com/FairBlock/fairy-bridge/pkg/transaction"
+	"github.com/FairBlock/fairyport/internal/events"
+	"github.com/FairBlock/fairyport/pkg/account"
+	"github.com/FairBlock/fairyport/pkg/transaction"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"

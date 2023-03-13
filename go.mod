@@ -1,4 +1,4 @@
-module github.com/FairBlock/fairy-bridge
+module github.com/FairBlock/fairyport
 
 go 1.20
 

@@ -3,10 +3,10 @@ package app
 import (
 	"log"
 
-	"github.com/FairBlock/fairy-bridge/config"
-	"github.com/FairBlock/fairy-bridge/internal/fairyclient"
-	"github.com/FairBlock/fairy-bridge/pkg/account"
-	grpcservice "github.com/FairBlock/fairy-bridge/pkg/grpcService"
+	"github.com/FairBlock/fairyport/config"
+	"github.com/FairBlock/fairyport/internal/fairyclient"
+	"github.com/FairBlock/fairyport/pkg/account"
+	grpcservice "github.com/FairBlock/fairyport/pkg/grpcService"
 	cosmosClient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"

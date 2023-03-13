@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"log"
 
-	"github.com/FairBlock/fairy-bridge/config"
+	"github.com/FairBlock/fairyport/config"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"

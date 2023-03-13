@@ -4,7 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/FairBlock/fairy-bridge/app"
+	"github.com/FairBlock/fairyport/app"
 
 	"github.com/spf13/cobra"
 )

@@ -1,11 +1,9 @@
 package grpcservice
 
 import (
-	"log"
-
-	//	"github.com/cosmos/cosmos-sdk/codec"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
 )
 
 func InitializeGRPCServer(grpcEndpoint string) *grpc.ClientConn {

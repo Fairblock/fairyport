@@ -25,7 +25,7 @@ func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDeta
 	defer cancel()
 
 	// query for new block event
-	query := "tm.event = 'NewBlock'"
+	query := "tm.event = 'Tx'"
 
 	// subscribe to new blocks
 	rsp, err := fairyClient.Subscribe(ctx, "test-client", query)
@@ -34,23 +34,23 @@ func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDeta
 	}
 	log.Println("subscribed to new block events")
 
-	// On NewBlock event
-	go func() {
-		for data := range rsp {
+	for data := range rsp {
 
-			// get event data
-			blockEvents := data.Events
+		// get event data
+		blockEvents := data.Events
 
-			// process the events
-			height, data := events.ProcessEvents(blockEvents)
-
-			err := transaction.SendTx(accDetails, txClient, height, data)
-			if err != nil {
-				log.Println("Sending Transaction for height :", height, " failed")
-			}
-
+		// process the events
+		height, aggregatedKeyShare, err := events.ProcessEvents(blockEvents)
+		if err != nil {
+			continue
 		}
-	}()
 
-	select {} // block forever
+		err = transaction.SendTx(accDetails, txClient, height, aggregatedKeyShare)
+		if err != nil {
+			log.Println("Sending Transaction for height :", height, " failed: ", err)
+			continue
+		}
+
+		log.Println("Successfully Broadcast Aggregated KeyShare for Height: ", height)
+	}
 }

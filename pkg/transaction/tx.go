@@ -2,8 +2,7 @@ package transaction
 
 import (
 	"context"
-	"log"
-
+	"errors"
 	"github.com/FairBlock/fairyport/pkg/account"
 	fbtypes "github.com/FairBlock/fairyport/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -52,6 +51,8 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 		ChainID:       "destination",
 		AccountNumber: accDetails.AccNo,
 		Sequence:      accDetails.AccSeqNo,
+		PubKey:        accDetails.PubKey,
+		Address:       accDetails.AccAddress.String(),
 	}
 
 	sigV2, err = secondSigning(encCfg.TxConfig.SignModeHandler().DefaultMode(), signerData,
@@ -86,10 +87,8 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 		return err
 	}
 
-	if grpcRes.TxResponse.Code == 0 {
-		log.Println("successfully Broadcasted Keyshares for height: ", height)
-	} else {
-		log.Println("Broadcasting Keyshares for Height :", height, " failed with code :", grpcRes.TxResponse.Code)
+	if grpcRes.TxResponse.Code != 0 {
+		return errors.New(grpcRes.TxResponse.RawLog)
 	}
 
 	// increment sequence number

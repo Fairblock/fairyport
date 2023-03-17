@@ -40,12 +40,12 @@ func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDeta
 		blockEvents := data.Events
 
 		// process the events
-		height, aggregatedKeyShare, err := events.ProcessEvents(blockEvents)
+		height, aggregatedKeyShare, pubkey, err := events.ProcessEvents(blockEvents)
 		if err != nil {
 			continue
 		}
 
-		err = transaction.SendTx(accDetails, txClient, height, aggregatedKeyShare)
+		err = transaction.SendTx(accDetails, txClient, height, aggregatedKeyShare, pubkey)
 		if err != nil {
 			log.Println("Sending Transaction for height :", height, " failed: ", err)
 			continue

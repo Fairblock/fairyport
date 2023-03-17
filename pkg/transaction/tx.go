@@ -13,14 +13,14 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 )
 
-func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string) error {
+func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string, pubKey string) error {
 	// Choose the codec
 	encCfg := simapp.MakeTestEncodingConfig()
 
 	// Create a new TxBuilder.
 	txBuilder := encCfg.TxConfig.NewTxBuilder()
 
-	msg := fbtypes.NewMsgCreateAggregatedKeyShare(accDetails.AccAddress.String(), height, data)
+	msg := fbtypes.NewMsgCreateAggregatedKeyShare(accDetails.AccAddress.String(), height, data, pubKey)
 
 	err := txBuilder.SetMsgs(msg)
 	if err != nil {
@@ -48,7 +48,7 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 
 	sigsV2 = []signing.SignatureV2{}
 	signerData := xauthsigning.SignerData{
-		ChainID:       "destination",
+		ChainID:       "fairyring",
 		AccountNumber: accDetails.AccNo,
 		Sequence:      accDetails.AccSeqNo,
 		PubKey:        accDetails.PubKey,

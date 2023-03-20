@@ -1,20 +1,31 @@
 package events
 
-import "strconv"
+import (
+	"errors"
+	"strconv"
+)
 
-func ProcessEvents(events map[string][]string) (uint64, string) {
-	var height uint64
-	var data string
+func ProcessEvents(events map[string][]string) (uint64, string, string, error) {
+
 	attrs, found := events["keyshare-aggregated.keyshare-aggregated-block-height"]
-	if found {
-		height, _ = strconv.ParseUint(attrs[0], 10, 64)
+	if !found {
+		return 0, "", "", errors.New("aggregated keyshare event not found")
 	}
 
-	attrs, found = events["keyshare-aggregated.keyshare-aggregated-data"]
-	if found {
-		data = attrs[0]
+	height, err := strconv.ParseUint(attrs[0], 10, 64)
+	if err != nil {
+		return 0, "", "", err
 	}
 
-	return height, data
-	// sendTx(height, data)
+	dataAttrs, found := events["keyshare-aggregated.keyshare-aggregated-data"]
+	if !found {
+		return 0, "", "", errors.New("aggregated keyshare event data not found")
+	}
+
+	pubKeyAttr, found := events["keyshare-aggregated.keyshare-aggregated-pubkey"]
+	if !found {
+		return 0, "", "", errors.New("aggregated keyshare event pubkey not found")
+	}
+
+	return height, dataAttrs[0], pubKeyAttr[0], nil
 }

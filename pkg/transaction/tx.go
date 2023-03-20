@@ -2,8 +2,7 @@ package transaction
 
 import (
 	"context"
-	"log"
-
+	"errors"
 	"github.com/FairBlock/fairyport/pkg/account"
 	fbtypes "github.com/FairBlock/fairyport/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -14,14 +13,14 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 )
 
-func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string) error {
+func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string, pubKey string) error {
 	// Choose the codec
 	encCfg := simapp.MakeTestEncodingConfig()
 
 	// Create a new TxBuilder.
 	txBuilder := encCfg.TxConfig.NewTxBuilder()
 
-	msg := fbtypes.NewMsgCreateAggregatedKeyShare(accDetails.AccAddress.String(), height, data)
+	msg := fbtypes.NewMsgCreateAggregatedKeyShare(accDetails.AccAddress.String(), height, data, pubKey)
 
 	err := txBuilder.SetMsgs(msg)
 	if err != nil {
@@ -49,9 +48,11 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 
 	sigsV2 = []signing.SignatureV2{}
 	signerData := xauthsigning.SignerData{
-		ChainID:       "destination",
+		ChainID:       "fairyring",
 		AccountNumber: accDetails.AccNo,
 		Sequence:      accDetails.AccSeqNo,
+		PubKey:        accDetails.PubKey,
+		Address:       accDetails.AccAddress.String(),
 	}
 
 	sigV2, err = secondSigning(encCfg.TxConfig.SignModeHandler().DefaultMode(), signerData,
@@ -86,10 +87,8 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 		return err
 	}
 
-	if grpcRes.TxResponse.Code == 0 {
-		log.Println("successfully Broadcasted Keyshares for height: ", height)
-	} else {
-		log.Println("Broadcasting Keyshares for Height :", height, " failed with code :", grpcRes.TxResponse.Code)
+	if grpcRes.TxResponse.Code != 0 {
+		return errors.New(grpcRes.TxResponse.RawLog)
 	}
 
 	// increment sequence number

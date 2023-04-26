@@ -4,10 +4,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"sync"
+
 	"github.com/FairBlock/fairyport/app"
 
 	"github.com/spf13/cobra"
 )
+
+var wg sync.WaitGroup
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
@@ -19,9 +23,22 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+
 	Run: func(cmd *cobra.Command, args []string) {
-		app := app.New()
-		app.Start()
+		wg.Add(1)
+
+		// Call relayer's Run function concurrently
+		relayerCmd.Run(cmd, []string{"start"})
+
+		go func() {
+			defer wg.Done()
+			app := app.New()
+			app.Start()
+		}()
+
+		// Wait for both commands to finish
+		wg.Wait()
+
 	},
 }
 

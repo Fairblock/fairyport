@@ -2,7 +2,7 @@ package types
 
 const (
 	// ModuleName defines the module name
-	ModuleName = "fairblock"
+	ModuleName = "pep"
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
@@ -11,21 +11,21 @@ const (
 	RouterKey = ModuleName
 
 	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_fairblock"
+	MemStoreKey = "mem_pep"
 
 	// Version defines the current version the IBC module supports
-	Version = "fairblock-1"
+	Version = "pep-1"
 
 	// PortID is the default port id that module binds to
-	PortID = "fairblock"
+	PortID = "pep"
 )
 
 var (
 	// PortKey defines the key to store the port ID in store
-	PortKey               = KeyPrefix("fairblock-port-")
-	ChannelKey            = KeyPrefix("fairblock-channel-")
-	LatestHeightKey       = KeyPrefix("fairblock-latest-height-")
-	LastExecutedHeightKey = KeyPrefix("fairblock-last-executed-height-")
+	PortKey               = KeyPrefix("pep-port-")
+	ChannelKey            = KeyPrefix("pep-channel-")
+	LatestHeightKey       = KeyPrefix("pep-latest-height-")
+	LastExecutedHeightKey = KeyPrefix("pep-last-executed-height-")
 )
 
 const (
@@ -50,6 +50,13 @@ const (
 	EncryptedTxRevertedEventHeight  = "reverted-encrypted-tx-target-height"
 	EncryptedTxRevertedEventIndex   = "reverted-encrypted-tx-index"
 	EncryptedTxRevertedEventReason  = "reverted-encrypted-tx-reason"
+)
+
+const (
+	KeyShareVerificationType    = "keyshare-verification"
+	KeyShareVerificationCreator = "keyshare-verification-creator"
+	KeyShareVerificationHeight  = "keyshare-verification-height"
+	KeyShareVerificationReason  = "keyshare-verification-reason"
 )
 
 func KeyPrefix(p string) []byte {

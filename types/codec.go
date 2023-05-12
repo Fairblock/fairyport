@@ -8,8 +8,8 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgSubmitEncryptedTx{}, "fairblock/SubmitEncryptedTx", nil)
-	cdc.RegisterConcrete(&MsgCreateAggregatedKeyShare{}, "fairblock/CreateAggregatedKeyShare", nil)
+	cdc.RegisterConcrete(&MsgSubmitEncryptedTx{}, "pep/SubmitEncryptedTx", nil)
+	cdc.RegisterConcrete(&MsgCreateAggregatedKeyShare{}, "pep/CreateAggregatedKeyShare", nil)
 	// this line is used by starport scaffolding # 2
 }
 

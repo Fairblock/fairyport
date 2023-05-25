@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"os/exec"
 
@@ -20,11 +20,9 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// homeDir := os.Getenv("HOME")
-		// cmdHermes := exec.Command("."+homeDir+"/.cargo/bin/hermes", args...)
 		wg.Add(1)
 		defer wg.Done()
-		cmdHermes := exec.Command("./external/hermes", args...)
+		cmdHermes := exec.Command("hermes", args...)
 
 		stdout, _ := cmdHermes.StdoutPipe()
 		stderr, _ := cmdHermes.StderrPipe()
@@ -35,8 +33,8 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		outputBytes, _ := ioutil.ReadAll(stdout)
-		errorBytes, _ := ioutil.ReadAll(stderr)
+		outputBytes, _ := io.ReadAll(stdout)
+		errorBytes, _ := io.ReadAll(stderr)
 
 		output := string(outputBytes)
 		errorOutput := string(errorBytes)

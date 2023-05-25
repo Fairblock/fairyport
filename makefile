@@ -1,7 +1,8 @@
 # Variables
 BINARY_NAME := fairyport
 INSTALL_PATH := $(HOME)/go/bin
-EXTERNAL_DIR := external
+HERMES_RELAYER := hermes
+HERMES_INSTALLED := $(shell command -v $(HERMES_RELAYER) 2> /dev/null)
 
 # Default target
 all: build
@@ -10,14 +11,18 @@ all: build
 check_cargo:
 	@command -v cargo >/dev/null 2>&1 || { echo >&2 "cargo is required but not installed. Please install Rust and Cargo and add it to your PATH."; exit 1; }
 
-# Install ibc-relayer-cli
-install_ibc: check_cargo
-	@echo "Installing ibc-relayer-cli..."
-	@mkdir -p $(EXTERNAL_DIR)
-	@cargo install ibc-relayer-cli --root $(EXTERNAL_DIR)
+# Check if Hermes relayer is installed
+check_hermes: check_cargo
+ifdef HERMES_INSTALLED
+	@echo "Hermes relayer is already installed. Version:"
+	@$(HERMES_RELAYER) --version
+else
+	@echo "Hermes relayer is not installed. Installing..."
+	@cargo install ibc-relayer-cli --bin hermes --locked
+endif
 
 # Build target
-build: install_ibc
+build: check_hermes
 	@echo "Building $(BINARY_NAME)..."
 	@go build -o $(BINARY_NAME)
 

@@ -4,6 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"log"
 	"sync"
 
 	"github.com/FairBlock/fairyport/app"
@@ -27,14 +28,23 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		wg.Add(1)
 
-		// Call relayer's Run function concurrently
-		relayerCmd.Run(cmd, []string{"start"})
+		withRelayer, _ := cmd.Flags().GetBool("with_relayer")
 
-		go func() {
-			defer wg.Done()
+		if withRelayer {
+			log.Println("Starting FairyPort with Hermes Relayer")
+
+			// Call relayer's Run function concurrently
+			relayerCmd.Run(cmd, []string{"start"})
+
+			go func() {
+				defer wg.Done()
+				app := app.New()
+				app.Start()
+			}()
+		} else {
 			app := app.New()
 			app.Start()
-		}()
+		}
 
 		// Wait for both commands to finish
 		wg.Wait()
@@ -44,6 +54,7 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(startCmd)
+	startCmd.Flags().Bool("with_relayer", false, "Start hermes relayer")
 
 	// Here you will define your flags and configuration settings.
 

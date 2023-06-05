@@ -21,7 +21,7 @@ The service constantly listens for Keyshare Aggregation events on the Fairyring 
 
 ## **Installation and Running**
 
-To install FairyPort, simply clone the repo and run `go install` in the root directory. This will install the `fairyport` binary.
+To install FairyPort, simply clone the repo and run `make install` in the root directory. This will install the `fairyport` binary.
 
 To run Fairyport, first make sure you have the correct configuration (discussed in the next section). Both the FairyRing chain and the Destination Chain should be running for FairyPort to function.
 

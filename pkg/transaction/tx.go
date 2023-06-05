@@ -3,8 +3,10 @@ package transaction
 import (
 	"context"
 	"errors"
+
+	fbtypes "github.com/FairBlock/fairyring/x/pep/types"
+
 	"github.com/FairBlock/fairyport/pkg/account"
-	fbtypes "github.com/FairBlock/fairyport/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -20,7 +22,7 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 	// Create a new TxBuilder.
 	txBuilder := encCfg.TxConfig.NewTxBuilder()
 
-	msg := fbtypes.NewMsgCreateAggregatedKeyShare(accDetails.AccAddress.String(), height, data, pubKey)
+	msg := fbtypes.NewMsgCreateAggregatedKeyShare(accDetails.AccAddress.String(), height, data)
 
 	err := txBuilder.SetMsgs(msg)
 	if err != nil {

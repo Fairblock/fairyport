@@ -3,14 +3,14 @@ package app
 import (
 	"log"
 
-	"github.com/FairBlock/fairyport/config"
-	"github.com/FairBlock/fairyport/internal/fairyclient"
-	"github.com/FairBlock/fairyport/pkg/account"
-	grpcservice "github.com/FairBlock/fairyport/pkg/grpcService"
+	"github.com/Fairblock/fairyport/config"
+	"github.com/Fairblock/fairyport/internal/fairyclient"
+	"github.com/Fairblock/fairyport/pkg/account"
+	grpcservice "github.com/Fairblock/fairyport/pkg/grpcService"
+	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 	cosmosClient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	"google.golang.org/grpc"
 )
 

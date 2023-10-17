@@ -6,7 +6,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/FairBlock/fairyport/config"
+	"github.com/Fairblock/fairyport/config"
 	"github.com/spf13/cobra"
 )
 

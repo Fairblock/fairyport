@@ -5,12 +5,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/FairBlock/fairyport/internal/events"
-	"github.com/FairBlock/fairyport/pkg/account"
-	"github.com/FairBlock/fairyport/pkg/transaction"
+	"github.com/Fairblock/fairyport/internal/events"
+	"github.com/Fairblock/fairyport/pkg/account"
+	"github.com/Fairblock/fairyport/pkg/transaction"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 )
 
 func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDetails, txClient tx.ServiceClient) {

@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"log"
 
-	"github.com/FairBlock/fairyport/config"
+	"github.com/Fairblock/fairyport/config"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -40,6 +40,12 @@ func (a *AccountDetails) InitializeAccount(config config.Config, authClient auth
 
 	a.PrivKey = secp256k1.PrivKey{Key: priv}
 	a.PubKey = a.PrivKey.PubKey()
+
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("fairy", "fairypub")
+	cfg.SetBech32PrefixForValidator("fairyvaloper", "fairyvaloperpub")
+	cfg.SetBech32PrefixForConsensusNode("fairyvalcons", "fairyrvalconspub")
+
 	a.AccAddress = sdk.AccAddress(a.PubKey.Address())
 
 	a.AccNo, a.AccSeqNo = GetAccountDetails(a.AccAddress, authClient)

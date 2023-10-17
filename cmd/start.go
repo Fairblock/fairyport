@@ -7,7 +7,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/FairBlock/fairyport/app"
+	"github.com/Fairblock/fairyport/app"
 
 	"github.com/spf13/cobra"
 )

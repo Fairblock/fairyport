@@ -3,13 +3,11 @@ package transaction
 import (
 	"context"
 	"errors"
-
-	fbtypes "github.com/FairBlock/fairyring/x/pep/types"
-
-	"github.com/FairBlock/fairyport/pkg/account"
+	"fairyring/app"
+	fbtypes "fairyring/x/pep/types"
+	"github.com/Fairblock/fairyport/pkg/account"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
@@ -17,7 +15,7 @@ import (
 
 func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string, pubKey string) error {
 	// Choose the codec
-	encCfg := simapp.MakeTestEncodingConfig()
+	encCfg := app.MakeEncodingConfig()
 
 	// Create a new TxBuilder.
 	txBuilder := encCfg.TxConfig.NewTxBuilder()

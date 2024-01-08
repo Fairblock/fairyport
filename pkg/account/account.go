@@ -47,7 +47,7 @@ func (a *AccountDetails) InitializeAccount(config config.Config, authClient auth
 	cfg.SetBech32PrefixForConsensusNode("fairyvalcons", "fairyrvalconspub")
 
 	a.AccAddress = sdk.AccAddress(a.PubKey.Address())
-
+	log.Println("Address: ", a.AccAddress.String())
 	a.AccNo, a.AccSeqNo = GetAccountDetails(a.AccAddress, authClient)
 	log.Println("Successfully Fetched Account Details for ", a.AccAddress)
 }

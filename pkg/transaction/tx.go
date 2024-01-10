@@ -48,7 +48,7 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 
 	sigsV2 = []signing.SignatureV2{}
 	signerData := xauthsigning.SignerData{
-		ChainID:       "fairyring",
+		ChainID:       "fairytest-3",
 		AccountNumber: accDetails.AccNo,
 		Sequence:      accDetails.AccSeqNo,
 		PubKey:        accDetails.PubKey,

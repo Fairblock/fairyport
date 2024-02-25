@@ -119,7 +119,7 @@ func defaultNode() Node {
 	var dNode Node
 	dNode.IP = "127.0.0.1"
 	dNode.GRPCPort = 9090
-	dNode.Protocol = "rpc"
+	dNode.Protocol = "tcp"
 	dNode.Port = 26657
 	dNode.AccountPrefix = "fairy"
 	dNode.ChainId = "fairytest-3"

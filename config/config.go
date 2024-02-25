@@ -14,13 +14,16 @@ type Config struct {
 	FairyRingNode   Node
 	DestinationNode Node
 	Mnemonic        string
+	DerivePath      string
 }
 
 type Node struct {
-	IP       string
-	Port     int64
-	Protocol string
-	GRPCPort int64
+	IP            string
+	Port          int64
+	Protocol      string
+	GRPCPort      int64
+	AccountPrefix string
+	ChainId       string
 }
 
 func (c *Config) SetConfig() {
@@ -108,7 +111,7 @@ func DefaultConfig() Config {
 	cfg.DestinationNode = defaultNode()
 	cfg.FairyRingNode = defaultNode()
 	cfg.Mnemonic = "# mnemonic"
-
+	cfg.DerivePath = "m/44'/118'/0'/0/0"
 	return cfg
 }
 
@@ -118,7 +121,8 @@ func defaultNode() Node {
 	dNode.GRPCPort = 9090
 	dNode.Protocol = "rpc"
 	dNode.Port = 26657
-
+	dNode.AccountPrefix = "fairy"
+	dNode.ChainId = "fairytest-3"
 	return dNode
 }
 
@@ -127,11 +131,16 @@ func setInitialConfig(c Config) {
 	viper.SetDefault("FairyRingNode.port", c.FairyRingNode.Port)
 	viper.SetDefault("FairyRingNode.protocol", c.FairyRingNode.Protocol)
 	viper.SetDefault("FairyRingNode.grpcport", c.FairyRingNode.GRPCPort)
+	viper.SetDefault("FairyRingNode.accountPrefix", c.FairyRingNode.AccountPrefix)
+	viper.SetDefault("FairyRingNode.chainId", c.FairyRingNode.ChainId)
 
 	viper.SetDefault("DestinationNode.ip", c.DestinationNode.IP)
 	viper.SetDefault("DestinationNode.port", c.DestinationNode.Port)
 	viper.SetDefault("DestinationNode.protocol", c.DestinationNode.Protocol)
 	viper.SetDefault("DestinationNode.grpcport", c.DestinationNode.GRPCPort)
+	viper.SetDefault("DestinationNode.accountPrefix", c.DestinationNode.AccountPrefix)
+	viper.SetDefault("DestinationNode.chainId", c.DestinationNode.ChainId)
 
 	viper.SetDefault("Mnemonic", c.Mnemonic)
+	viper.SetDefault("derivePath", c.DerivePath)
 }

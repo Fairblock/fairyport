@@ -53,7 +53,8 @@ func New() *App {
 
 func (a *App) Start() {
 	// start the client
-	fairyclient.StartFairyClient(a.FairyClient, &a.AccountInfo, a.TxClient)
+
+	fairyclient.StartFairyClient(a.FairyClient, &a.AccountInfo, a.TxClient, a.Cfg)
 
 	// defer a.FairyClient.Stop()
 }

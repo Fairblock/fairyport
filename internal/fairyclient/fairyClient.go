@@ -2,6 +2,7 @@ package fairyclient
 
 import (
 	"context"
+	"github.com/Fairblock/fairyport/config"
 	"log"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 )
 
-func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDetails, txClient tx.ServiceClient) {
+func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDetails, txClient tx.ServiceClient, cfg config.Config) {
 	err := fairyClient.Start()
 	if err != nil {
 		log.Fatal(err)
@@ -40,12 +41,12 @@ func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDeta
 		blockEvents := data.Events
 
 		// process the events
-		height, aggregatedKeyShare, pubkey, err := events.ProcessEvents(blockEvents)
+		height, aggregatedKeyShare, _, err := events.ProcessEvents(blockEvents)
 		if err != nil {
 			continue
 		}
 
-		err = transaction.SendTx(accDetails, txClient, height, aggregatedKeyShare, pubkey)
+		err = transaction.SendTx(accDetails, txClient, height, aggregatedKeyShare, cfg)
 		if err != nil {
 			log.Println("Sending Transaction for height :", height, " failed: ", err)
 			continue

@@ -30,7 +30,7 @@ func (a *AccountDetails) InitializeAccount(config config.Config, authClient auth
 	}
 
 	master, ch := hd.ComputeMastersFromSeed(seed)
-	path := "m/44'/118'/0'/0/0"
+	path := config.DerivePath
 	priv, err := hd.DerivePrivateKeyForPath(master, ch, path)
 	if err != nil {
 		log.Fatal(err)
@@ -42,9 +42,10 @@ func (a *AccountDetails) InitializeAccount(config config.Config, authClient auth
 	a.PubKey = a.PrivKey.PubKey()
 
 	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("fairy", "fairypub")
-	cfg.SetBech32PrefixForValidator("fairyvaloper", "fairyvaloperpub")
-	cfg.SetBech32PrefixForConsensusNode("fairyvalcons", "fairyrvalconspub")
+	prefix := config.DestinationNode.AccountPrefix
+	cfg.SetBech32PrefixForAccount(prefix, prefix+"pub")
+	cfg.SetBech32PrefixForValidator(prefix+"valoper", prefix+"valoperpub")
+	cfg.SetBech32PrefixForConsensusNode(prefix+"valcons", prefix+"valconspub")
 
 	a.AccAddress = sdk.AccAddress(a.PubKey.Address())
 	log.Println("Address: ", a.AccAddress.String())

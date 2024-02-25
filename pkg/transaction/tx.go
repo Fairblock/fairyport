@@ -3,9 +3,10 @@ package transaction
 import (
 	"context"
 	"errors"
-	"fairyring/app"
-	fbtypes "fairyring/x/pep/types"
+	"github.com/Fairblock/fairyport/config"
 	"github.com/Fairblock/fairyport/pkg/account"
+	"github.com/Fairblock/fairyring/app"
+	fbtypes "github.com/Fairblock/fairyring/x/pep/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/types/tx"
@@ -13,7 +14,7 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 )
 
-func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string, pubKey string) error {
+func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string, cfg config.Config) error {
 	// Choose the codec
 	encCfg := app.MakeEncodingConfig()
 
@@ -48,7 +49,7 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 
 	sigsV2 = []signing.SignatureV2{}
 	signerData := xauthsigning.SignerData{
-		ChainID:       "fairytest-3",
+		ChainID:       cfg.DestinationNode.ChainId,
 		AccountNumber: accDetails.AccNo,
 		Sequence:      accDetails.AccSeqNo,
 		PubKey:        accDetails.PubKey,

@@ -41,7 +41,7 @@ func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDeta
 		blockEvents := data.Events
 
 		// process the events
-		height, aggregatedKeyShare, _, err := events.ProcessEvents(blockEvents)
+		height, aggregatedKeyShare, err := events.ProcessEvents(blockEvents)
 		if err != nil {
 			continue
 		}

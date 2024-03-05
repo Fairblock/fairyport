@@ -122,7 +122,7 @@ func defaultNode() Node {
 	dNode.Protocol = "tcp"
 	dNode.Port = 26657
 	dNode.AccountPrefix = "fairy"
-	dNode.ChainId = "fairytest-3"
+	dNode.ChainId = "fairyring-testnet-1"
 	return dNode
 }
 

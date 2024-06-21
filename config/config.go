@@ -15,6 +15,7 @@ type Config struct {
 	DestinationNode Node
 	Mnemonic        string
 	DerivePath      string
+	MetricsPort     uint64
 }
 
 type Node struct {
@@ -27,13 +28,6 @@ type Node struct {
 }
 
 func (c *Config) SetConfig() {
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	viper.SetConfigType("yml")
-
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s", err)
-	}
 
 	//viper.SetDefault("")
 
@@ -112,6 +106,7 @@ func DefaultConfig() Config {
 	cfg.FairyRingNode = defaultNode()
 	cfg.Mnemonic = "# mnemonic"
 	cfg.DerivePath = "m/44'/118'/0'/0/0"
+	cfg.MetricsPort = 2224
 	return cfg
 }
 
@@ -143,4 +138,5 @@ func setInitialConfig(c Config) {
 
 	viper.SetDefault("Mnemonic", c.Mnemonic)
 	viper.SetDefault("derivePath", c.DerivePath)
+	viper.SetDefault("MetricsPort", c.MetricsPort)
 }

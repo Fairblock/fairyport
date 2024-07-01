@@ -12,6 +12,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	"strings"
+	"time"
 )
 
 func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, height uint64, data string, cfg config.Config) error {
@@ -88,12 +90,17 @@ func SendTx(accDetails *account.AccountDetails, txClient tx.ServiceClient, heigh
 		return err
 	}
 
-	if grpcRes.TxResponse.Code != 0 {
-		return errors.New(grpcRes.TxResponse.RawLog)
+	txResp, err := WaitForTx(txClient, grpcRes.TxResponse.TxHash, time.Second)
+	if err != nil {
+		return err
 	}
 
 	// increment sequence number
 	accDetails.AccSeqNo = accDetails.AccSeqNo + 1
+
+	if txResp.TxResponse.Code != 0 {
+		return errors.New(txResp.TxResponse.RawLog)
+	}
 
 	return nil
 }
@@ -131,4 +138,19 @@ func secondSigning(signMode signing.SignMode,
 	}
 
 	return sigV2, nil
+}
+
+func WaitForTx(txClient tx.ServiceClient, hash string, rate time.Duration) (*tx.GetTxResponse, error) {
+	for {
+		resp, err := txClient.GetTx(context.Background(), &tx.GetTxRequest{Hash: hash})
+		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				time.Sleep(rate)
+				continue
+			}
+
+			return nil, err
+		}
+		return resp, nil
+	}
 }

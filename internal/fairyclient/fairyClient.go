@@ -20,9 +20,9 @@ import (
 )
 
 var (
-	invalidBroadcastAggregatedKeyShare = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "fairyport_invalid_broadcast_aggregated_keyshare",
-		Help: "The total number of invalid key share generated",
+	failedBroadcastAggregatedKeyShare = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "fairyport_failed_broadcast_aggregated_keyshare",
+		Help: "The total number of failed key share generated",
 	})
 
 	validBroadcastAggregatedKeyShare = promauto.NewCounter(prometheus.CounterOpts{
@@ -69,7 +69,7 @@ func StartFairyClient(fairyClient *rpchttp.HTTP, accDetails *account.AccountDeta
 
 		err = transaction.SendTx(accDetails, txClient, height, aggregatedKeyShare, cfg)
 		if err != nil {
-			invalidBroadcastAggregatedKeyShare.Inc()
+			failedBroadcastAggregatedKeyShare.Inc()
 			log.Println("Sending Transaction for height :", height, " failed: ", err)
 			continue
 		}

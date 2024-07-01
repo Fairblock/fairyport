@@ -34,6 +34,7 @@ The following configuration options are available:
 - FairyRingNode
 - DestinationNode
 - Mnemonic
+- MetricsPort
 
 ### **FairyRing Node**
 
@@ -58,3 +59,9 @@ The following configuration options are available:
 |  Option   | Description                                                                      |
 |-----------|----------------------------------------------------------------------------------|
 | Mnemonic  | The seed phrase used to generate the private key for the account responsible for making transactions to the Destination Chain|
+
+### **MetricsPort**
+
+|  Option      | Description                                   |
+|--------------|-----------------------------------------------|
+| MetricsPort  | The port that lets prometheus collect metrics |

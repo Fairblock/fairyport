@@ -11,11 +11,27 @@ import (
 )
 
 type Config struct {
-	FairyRingNode   Node
+	FairyringNodeWS   CosmosNode
+	CosmosRelayConfig CosmosRelayConfigType
+	EVMRelayTarget    EVMRelayTarget
+}
+
+type CosmosRelayConfigType struct {
 	DestinationNode Node
 	Mnemonic        string
 	DerivePath      string
 	MetricsPort     uint64
+}
+
+type EVMRelayTarget struct {
+	ChainRPC        string
+	ContractAddress string
+}
+
+type CosmosNode struct {
+	IP       string
+	Port     int64
+	Protocol string
 }
 
 type Node struct {
@@ -28,9 +44,6 @@ type Node struct {
 }
 
 func (c *Config) SetConfig() {
-
-	//viper.SetDefault("")
-
 	err := viper.Unmarshal(c)
 	if err != nil {
 		panic(err)
@@ -38,21 +51,21 @@ func (c *Config) SetConfig() {
 }
 
 func (c *Config) GetDestinationNodeURI() string {
-	nodeURI := c.DestinationNode.Protocol + "://" + c.DestinationNode.IP + ":" + strconv.FormatInt(c.DestinationNode.Port, 10)
+	nodeURI := c.CosmosRelayConfig.DestinationNode.Protocol + "://" + c.CosmosRelayConfig.DestinationNode.IP + ":" + strconv.FormatInt(c.CosmosRelayConfig.DestinationNode.Port, 10)
 	return nodeURI
 }
 
 func (c *Config) GetFairyNodeURI() string {
-	nodeURI := c.FairyRingNode.Protocol + "://" + c.FairyRingNode.IP + ":" + strconv.FormatInt(c.FairyRingNode.Port, 10)
+	nodeURI := c.FairyringNodeWS.Protocol + "://" + c.FairyringNodeWS.IP + ":" + strconv.FormatInt(c.FairyringNodeWS.Port, 10)
 	return nodeURI
 }
 
 func (c *Config) GetMnemonic() string {
-	return c.Mnemonic
+	return c.CosmosRelayConfig.Mnemonic
 }
 
 func (c *Config) GetGRPCEndPoint() string {
-	ep := c.DestinationNode.IP + ":" + strconv.FormatInt(c.DestinationNode.GRPCPort, 10)
+	ep := c.CosmosRelayConfig.DestinationNode.IP + ":" + strconv.FormatInt(c.CosmosRelayConfig.DestinationNode.GRPCPort, 10)
 	return ep
 }
 
@@ -61,8 +74,6 @@ func (c *Config) ExportConfig() error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(homeDir)
-	fmt.Println(c)
 
 	if _, err := os.Stat(homeDir + "/.fairyport"); os.IsNotExist(err) {
 		// Directory does not exist, create it
@@ -76,14 +87,12 @@ func (c *Config) ExportConfig() error {
 	_, err = os.Stat(filePath)
 	if os.IsNotExist(err) {
 		// File does not exist, create it
-		log.Println("creating initial config")
-
 		file, err := os.Create(filePath)
 		if err != nil {
 			return fmt.Errorf("failed to create file: %v", err)
 		}
 		defer file.Close()
-		log.Printf("Created file: %s\n", filePath)
+		log.Printf("Created Config File: %s\n", filePath)
 	} else {
 		log.Printf("Config file already exists: %s\n", filePath)
 	}
@@ -94,19 +103,25 @@ func (c *Config) ExportConfig() error {
 
 	setInitialConfig(*c)
 
-	err = viper.WriteConfigAs(homeDir + "/.fairyport/config.yml")
-	log.Println(err)
-
-	return nil
+	return viper.WriteConfigAs(homeDir + "/.fairyport/config.yml")
 }
 
 func DefaultConfig() Config {
 	var cfg Config
-	cfg.DestinationNode = defaultNode()
-	cfg.FairyRingNode = defaultNode()
-	cfg.Mnemonic = "# mnemonic"
-	cfg.DerivePath = "m/44'/118'/0'/0/0"
-	cfg.MetricsPort = 2224
+	cfg.CosmosRelayConfig.DestinationNode = defaultNode()
+	cfg.FairyringNodeWS = CosmosNode{
+		IP:       "127.0.0.1",
+		Port:     26657,
+		Protocol: "tcp",
+	}
+	cfg.CosmosRelayConfig.Mnemonic = "# mnemonic"
+	cfg.CosmosRelayConfig.DerivePath = "m/44'/118'/0'/0/0"
+	cfg.CosmosRelayConfig.MetricsPort = 2224
+
+	cfg.EVMRelayTarget = EVMRelayTarget{
+		ChainRPC:        "wss://ws.sketchpad-1.forma.art",
+		ContractAddress: "0xcA6cC5c1c4Fc025504273FE61fc0E09100B03D98",
+	}
 	return cfg
 }
 
@@ -117,26 +132,25 @@ func defaultNode() Node {
 	dNode.Protocol = "tcp"
 	dNode.Port = 26657
 	dNode.AccountPrefix = "fairy"
-	dNode.ChainId = "fairyring-testnet-1"
+	dNode.ChainId = "fairyring-testnet-3"
 	return dNode
 }
 
 func setInitialConfig(c Config) {
-	viper.SetDefault("FairyRingNode.ip", c.FairyRingNode.IP)
-	viper.SetDefault("FairyRingNode.port", c.FairyRingNode.Port)
-	viper.SetDefault("FairyRingNode.protocol", c.FairyRingNode.Protocol)
-	viper.SetDefault("FairyRingNode.grpcport", c.FairyRingNode.GRPCPort)
-	viper.SetDefault("FairyRingNode.accountPrefix", c.FairyRingNode.AccountPrefix)
-	viper.SetDefault("FairyRingNode.chainId", c.FairyRingNode.ChainId)
+	viper.SetDefault("FairyringNodeWS.IP", c.FairyringNodeWS.IP)
+	viper.SetDefault("FairyringNodeWS.Port", c.FairyringNodeWS.Port)
+	viper.SetDefault("FairyringNodeWS.Protocol", c.FairyringNodeWS.Protocol)
 
-	viper.SetDefault("DestinationNode.ip", c.DestinationNode.IP)
-	viper.SetDefault("DestinationNode.port", c.DestinationNode.Port)
-	viper.SetDefault("DestinationNode.protocol", c.DestinationNode.Protocol)
-	viper.SetDefault("DestinationNode.grpcport", c.DestinationNode.GRPCPort)
-	viper.SetDefault("DestinationNode.accountPrefix", c.DestinationNode.AccountPrefix)
-	viper.SetDefault("DestinationNode.chainId", c.DestinationNode.ChainId)
+	viper.SetDefault("CosmosRelayConfig.DestinationNode.IP", c.CosmosRelayConfig.DestinationNode.IP)
+	viper.SetDefault("CosmosRelayConfig.DestinationNode.Port", c.CosmosRelayConfig.DestinationNode.Port)
+	viper.SetDefault("CosmosRelayConfig.DestinationNode.Protocol", c.CosmosRelayConfig.DestinationNode.Protocol)
+	viper.SetDefault("CosmosRelayConfig.DestinationNode.GrpcPort", c.CosmosRelayConfig.DestinationNode.GRPCPort)
+	viper.SetDefault("CosmosRelayConfig.DestinationNode.AccountPrefix", c.CosmosRelayConfig.DestinationNode.AccountPrefix)
+	viper.SetDefault("CosmosRelayConfig.DestinationNode.ChainId", c.CosmosRelayConfig.DestinationNode.ChainId)
 
-	viper.SetDefault("Mnemonic", c.Mnemonic)
-	viper.SetDefault("derivePath", c.DerivePath)
-	viper.SetDefault("MetricsPort", c.MetricsPort)
+	viper.SetDefault("CosmosRelayConfig.Mnemonic", c.CosmosRelayConfig.Mnemonic)
+	viper.SetDefault("CosmosRelayConfig.DerivePath", c.CosmosRelayConfig.DerivePath)
+	viper.SetDefault("CosmosRelayConfig.MetricsPort", c.CosmosRelayConfig.MetricsPort)
+
+	viper.SetDefault("EVMRelayTarget", c.EVMRelayTarget)
 }

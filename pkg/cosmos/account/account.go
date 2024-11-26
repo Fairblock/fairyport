@@ -15,7 +15,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
-type AccountDetails struct {
+type CosmosAccountDetail struct {
 	AccNo      uint64
 	AccSeqNo   uint64
 	AccAddress sdk.AccAddress
@@ -23,34 +23,42 @@ type AccountDetails struct {
 	PubKey     cryptotypes.PubKey
 }
 
-func (a *AccountDetails) InitializeAccount(config config.Config, authClient authTypes.QueryClient) {
+func NewCosmosAccount(config config.Config, authClient authTypes.QueryClient) (*CosmosAccountDetail, error) {
 	seed, err := bip39.NewSeedWithErrorChecking(config.GetMnemonic(), "")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	master, ch := hd.ComputeMastersFromSeed(seed)
-	path := config.DerivePath
+	path := config.CosmosRelayConfig.DerivePath
 	priv, err := hd.DerivePrivateKeyForPath(master, ch, path)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	log.Println("Private Key derived successfully: ", hex.EncodeToString(priv))
 
-	a.PrivKey = secp256k1.PrivKey{Key: priv}
-	a.PubKey = a.PrivKey.PubKey()
+	privKey := secp256k1.PrivKey{Key: priv}
+	pubKey := privKey.PubKey()
 
 	cfg := sdk.GetConfig()
-	prefix := config.DestinationNode.AccountPrefix
+	prefix := config.CosmosRelayConfig.DestinationNode.AccountPrefix
 	cfg.SetBech32PrefixForAccount(prefix, prefix+"pub")
 	cfg.SetBech32PrefixForValidator(prefix+"valoper", prefix+"valoperpub")
 	cfg.SetBech32PrefixForConsensusNode(prefix+"valcons", prefix+"valconspub")
 
-	a.AccAddress = sdk.AccAddress(a.PubKey.Address())
-	log.Println("Address: ", a.AccAddress.String())
-	a.AccNo, a.AccSeqNo = GetAccountDetails(a.AccAddress, authClient)
-	log.Println("Successfully Fetched Account Details for ", a.AccAddress)
+	addr := sdk.AccAddress(pubKey.Address())
+	log.Println("Address: ", addr.String())
+	accNo, accSeqNo := GetAccountDetails(addr, authClient)
+	log.Println("Successfully Fetched Account Details for ", addr)
+
+	return &CosmosAccountDetail{
+		PrivKey:    privKey,
+		PubKey:     pubKey,
+		AccAddress: addr,
+		AccNo:      accNo,
+		AccSeqNo:   accSeqNo,
+	}, nil
 }
 
 func GetAccountDetails(address sdk.AccAddress, authClient authTypes.QueryClient) (uint64, uint64) {

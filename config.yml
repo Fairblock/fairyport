@@ -1,19 +1,19 @@
-FairyRingNode:
-  ip: "0.0.0.0"
-  port: 26657
-  protocol: "tcp"
-  grpcport: 9090
-  accountprefix: fairy
-  chainid: fairytest-3
+cosmosrelayconfig:
+    derivepath: m/44'/118'/0'/0/0
+    destinationnode:
+        accountprefix: fairy
+        chainid: fairyring-testnet-3
+        grpcport: 9090
+        ip: 127.0.0.1
+        port: 26657
+        protocol: tcp
+    metricsport: 2224
+    mnemonic: 'cruise scene law sea push expose scorpion wire trick repair wave quote task dose inner denial alpha favorite certain blouse motion flash split lunch'
+evmrelaytarget:
+    chainrpc: wss://ws.sketchpad-1.forma.art
+    contractaddress: 0xcA6cC5c1c4Fc025504273FE61fc0E09100B03D98
+fairyringnodews:
+    ip: 127.0.0.1
+    port: 26657
+    protocol: tcp
 
-DestinationNode:
-  ip: "0.0.0.0"
-  port: 26659
-  protocol: "tcp"
-  grpcport: 9092
-  accountprefix: fairy
-  chainid: fairytest-3
-
-derivepath: m/44'/118'/0'/0/0
-Mnemonic: "cruise scene law sea push expose scorpion wire trick repair wave quote task dose inner denial alpha favorite certain blouse motion flash split lunch"
-MetricsPort: 2224

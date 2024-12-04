@@ -4,12 +4,17 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"log"
+	"math/big"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/Fairblock/fairyport/config"
 	"github.com/Fairblock/fairyport/contract"
 	"github.com/Fairblock/fairyport/internal/events"
 	cosmosAccount "github.com/Fairblock/fairyport/pkg/cosmos/account"
 	grpcservice "github.com/Fairblock/fairyport/pkg/cosmos/grpcService"
-	"github.com/Fairblock/fairyport/pkg/cosmos/transaction"
 	evmAccount "github.com/Fairblock/fairyport/pkg/evm/account"
 	evmTx "github.com/Fairblock/fairyport/pkg/evm/transaction"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
@@ -24,11 +29,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
-	"log"
-	"math/big"
-	"net/http"
-	"os"
-	"time"
 )
 
 var (
@@ -161,13 +161,8 @@ func (app *FairyportApp) StartFairyport() {
 		}
 
 		if app.RelayToCosmos {
-			if err := transaction.SendTx(
-				app.CosmosAccountInfo,
-				app.TxClient,
-				height,
-				aggregatedKeyShare,
-				app.Cfg.CosmosRelayConfig.DestinationNode.ChainId,
-			); err != nil {
+			err := RelayDecryptionKeyToCosmos(app, height, aggregatedKeyShare)
+			if err != nil {
 				failedBroadcastAggregatedKeyShare.Inc()
 				log.Printf("[Cosmos] [%d] | Failed to submit decryption key. Error: %s", height, err.Error())
 				continue
@@ -177,6 +172,7 @@ func (app *FairyportApp) StartFairyport() {
 		}
 
 		if app.RelayToEVMs {
+
 			decryptionKeyByte, err := hex.DecodeString(aggregatedKeyShare)
 			if err != nil {
 				log.Printf("[EVM] [%d] Error decoding decryption key to bytes, error: %s", height, err.Error())

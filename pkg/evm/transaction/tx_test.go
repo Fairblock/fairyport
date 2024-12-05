@@ -2,6 +2,7 @@ package transaction_test
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"errors"
 	"math/big"
 	"testing"
@@ -63,7 +64,7 @@ func TestNewEVMTxQueue_Success(t *testing.T) {
 	rpc := "http://mock-rpc"
 	contractAddr := "0xMockContractAddress"
 	accDetail := &account.EVMAccountDetail{
-		PrivateKey: mockPrivateKey(), // Replace with valid private key for test
+		PrivateKey: &ecdsa.PrivateKey{}, // Replace with valid private key for test
 		Address:    common.HexToAddress("0xMockAddress"),
 	}
 	updateGasEveryBlock := false
@@ -90,7 +91,7 @@ func TestNewEVMTxQueue_DialFailure(t *testing.T) {
 	rpc := "http://mock-rpc"
 	contractAddr := "0xMockContractAddress"
 	accDetail := &account.EVMAccountDetail{
-		PrivateKey: mockPrivateKey(), // Replace with valid private key for test
+		PrivateKey: &ecdsa.PrivateKey{}, // Replace with valid private key for test
 		Address:    common.HexToAddress("0xMockAddress"),
 	}
 	updateGasEveryBlock := false

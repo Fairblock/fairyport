@@ -9,6 +9,7 @@ import (
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/grpc"
 )
 
 // MockAuthQueryClient simulates the authTypes.QueryClient behavior
@@ -16,9 +17,54 @@ type MockAuthQueryClient struct {
 	mock.Mock
 }
 
-func (m *MockAuthQueryClient) Account(ctx context.Context, req *authTypes.QueryAccountRequest) (*authTypes.QueryAccountResponse, error) {
+func (m *MockAuthQueryClient) Account(ctx context.Context, req *authTypes.QueryAccountRequest, opts ...grpc.CallOption) (*authTypes.QueryAccountResponse, error) {
 	args := m.Called(ctx, req)
 	return args.Get(0).(*authTypes.QueryAccountResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) AccountAddressByID(ctx context.Context, req *authTypes.QueryAccountAddressByIDRequest, opts ...grpc.CallOption) (*authTypes.QueryAccountAddressByIDResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.QueryAccountAddressByIDResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) AccountInfo(ctx context.Context, req *authTypes.QueryAccountInfoRequest, opts ...grpc.CallOption) (*authTypes.QueryAccountInfoResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.QueryAccountInfoResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) Accounts(ctx context.Context, req *authTypes.QueryAccountsRequest, opts ...grpc.CallOption) (*authTypes.QueryAccountsResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.QueryAccountsResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) AddressBytesToString(ctx context.Context, req *authTypes.AddressBytesToStringRequest, opts ...grpc.CallOption) (*authTypes.AddressBytesToStringResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.AddressBytesToStringResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) AddressStringToBytes(ctx context.Context, req *authTypes.AddressStringToBytesRequest, opts ...grpc.CallOption) (*authTypes.AddressStringToBytesResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.AddressStringToBytesResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) Bech32Prefix(ctx context.Context, req *authTypes.Bech32PrefixRequest, opts ...grpc.CallOption) (*authTypes.Bech32PrefixResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.Bech32PrefixResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) ModuleAccountByName(ctx context.Context, req *authTypes.QueryModuleAccountByNameRequest, opts ...grpc.CallOption) (*authTypes.QueryModuleAccountByNameResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.QueryModuleAccountByNameResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) ModuleAccounts(ctx context.Context, req *authTypes.QueryModuleAccountsRequest, opts ...grpc.CallOption) (*authTypes.QueryModuleAccountsResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.QueryModuleAccountsResponse), args.Error(1)
+}
+
+func (m *MockAuthQueryClient) Params(ctx context.Context, req *authTypes.QueryParamsRequest, opts ...grpc.CallOption) (*authTypes.QueryParamsResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(*authTypes.QueryParamsResponse), args.Error(1)
 }
 
 func TestNewCosmosAccount_Success(t *testing.T) {

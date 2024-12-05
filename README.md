@@ -38,7 +38,6 @@ The following configuration options are available:
 - CosmosRelayConfig
   - Destination Node
   - Metrics Port
-  - Mnemonic
   - Derive Path
 - EVMRelayTarget
   - Chain RPC
@@ -50,13 +49,14 @@ The following configuration options are available:
 
 `EVM_PKEY` environment variable is required when relaying to EVM chain.
 
+`COSMOS_MNEMONIC` environment variable is required when relaying to Cosmos chain.
+
 ### **Cosmos Relay Config**
 
 | Option           | Description                                                                |
 |------------------|----------------------------------------------------------------------------|
 | Destination Node | The Destination Cosmos Node to relay to.                                   |
 | Metrics Port     | The port that lets prometheus collect metrics                              |
-| Mnemonic         | The seed phrase used making transactions to the Destination Chain          |
 | Derive Path      | The path Fairyport uses to derive the private key from the mnemonic phase. |
 
 ### **Destination Node**
@@ -85,14 +85,16 @@ The following configuration options are available:
 | Port     | The Port of the given Fairyring node endpoint.   |
 | Protocol | The Protocol of Fairyring node endpoint.         | 
 
-### **EVM_PKEY** Environment variable 
-
-For the EVM chain private key, you can do one of the following:
+### **EVM_PKEY** & **COSMOS_MNEMONIC** Environment variable 
 
 1. Pass the environemnt variable to `fairyport` when starting it
 
 ```bash
 EVM_PKEY=your_hex_private_key fairyport start --config $HOME/.fairyport/config.yml
+```
+
+```bash
+COSMOS_MNEMONIC="mnemonic phase" fairyport start --config $HOME/.fairyport/config.yml
 ```
 
 2. Set the environment before running `fairyport`
@@ -102,10 +104,16 @@ export EVM_PKEY=your_hex_private_key
 fairyport start --config $HOME/.fairyport/config.yml
 ```
 
+```bash
+export COSMOS_MNEMONIC="mnemonic phase"
+fairyport start --config $HOME/.fairyport/config.yml
+```
+
 3. Create a `.env` file in the same directory you are running `fairyport`
 
 ```bash
 EVM_PKEY=your_hex_private_key
+COSMOS_MNEMONIC="mnemonic phase"
 ```
 
 then run `fairyport start --config $HOME/.fairyport/config.yml`

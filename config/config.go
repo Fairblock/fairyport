@@ -18,7 +18,6 @@ type Config struct {
 
 type CosmosRelayConfigType struct {
 	DestinationNode Node
-	Mnemonic        string
 	DerivePath      string
 	MetricsPort     uint64
 }
@@ -58,10 +57,6 @@ func (c *Config) GetDestinationNodeURI() string {
 func (c *Config) GetFairyNodeURI() string {
 	nodeURI := c.FairyringNodeWS.Protocol + "://" + c.FairyringNodeWS.IP + ":" + strconv.FormatInt(c.FairyringNodeWS.Port, 10)
 	return nodeURI
-}
-
-func (c *Config) GetMnemonic() string {
-	return c.CosmosRelayConfig.Mnemonic
 }
 
 func (c *Config) GetGRPCEndPoint() string {
@@ -114,7 +109,6 @@ func DefaultConfig() Config {
 		Port:     26657,
 		Protocol: "tcp",
 	}
-	cfg.CosmosRelayConfig.Mnemonic = "# mnemonic"
 	cfg.CosmosRelayConfig.DerivePath = "m/44'/118'/0'/0/0"
 	cfg.CosmosRelayConfig.MetricsPort = 2224
 
@@ -148,7 +142,6 @@ func setInitialConfig(c Config) {
 	viper.SetDefault("CosmosRelayConfig.DestinationNode.AccountPrefix", c.CosmosRelayConfig.DestinationNode.AccountPrefix)
 	viper.SetDefault("CosmosRelayConfig.DestinationNode.ChainId", c.CosmosRelayConfig.DestinationNode.ChainId)
 
-	viper.SetDefault("CosmosRelayConfig.Mnemonic", c.CosmosRelayConfig.Mnemonic)
 	viper.SetDefault("CosmosRelayConfig.DerivePath", c.CosmosRelayConfig.DerivePath)
 	viper.SetDefault("CosmosRelayConfig.MetricsPort", c.CosmosRelayConfig.MetricsPort)
 

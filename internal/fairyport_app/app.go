@@ -78,7 +78,7 @@ func NewFairyportApp(cfg config.Config) *FairyportApp {
 		log.Fatalf("Error creating connection to Fairyring node, error: %s", err.Error())
 	}
 
-	accDetails, cosmosErr := cosmosAccount.NewCosmosAccount(cfg, authClient)
+	accDetails, cosmosErr := cosmosAccount.NewCosmosAccount(os.Getenv("COSMOS_MNEMONIC"), cfg, authClient)
 	if cosmosErr != nil {
 		log.Printf("Unable to initialize Cosmos Account, Disabled relaying keys to destination cosmos chain, err: %s", cosmosErr.Error())
 	} else {

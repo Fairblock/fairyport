@@ -23,8 +23,8 @@ type CosmosAccountDetail struct {
 	PubKey     cryptotypes.PubKey
 }
 
-func NewCosmosAccount(config config.Config, authClient authTypes.QueryClient) (*CosmosAccountDetail, error) {
-	seed, err := bip39.NewSeedWithErrorChecking(config.GetMnemonic(), "")
+func NewCosmosAccount(mnemonic string, config config.Config, authClient authTypes.QueryClient) (*CosmosAccountDetail, error) {
+	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	if err != nil {
 		return nil, err
 	}

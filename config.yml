@@ -8,7 +8,6 @@ cosmosrelayconfig:
         port: 26657
         protocol: tcp
     metricsport: 2224
-    mnemonic: 'cruise scene law sea push expose scorpion wire trick repair wave quote task dose inner denial alpha favorite certain blouse motion flash split lunch'
 evmrelaytarget:
     chainrpc: wss://ws.sketchpad-1.forma.art
     contractaddress: 0xcA6cC5c1c4Fc025504273FE61fc0E09100B03D98

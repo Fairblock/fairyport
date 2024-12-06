@@ -1,0 +1,17 @@
+cosmosrelayconfig:
+    derivepath: m/44'/118'/0'/0/0
+    destinationnode:
+        accountprefix: fairy
+        chainid: fairyring_devnet
+        grpcport: 9090
+        ip: 127.0.0.1
+        port: 26657
+        protocol: tcp
+    metricsport: 2224
+evmrelaytarget:
+    chainrpc: ws://127.0.0.1:8545
+    contractaddress: 0xcA6cC5c1c4Fc025504273FE61fc0E09100B03D98
+fairyringnodews:
+    ip: 54.210.57.197
+    port: 26657
+    protocol: tcp

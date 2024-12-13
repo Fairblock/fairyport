@@ -4,10 +4,12 @@ Copyright © 2024 Fairblock
 package cmd
 
 import (
-	"log"
+	"fmt"
+	"github.com/Fairblock/fairyport/config"
+	"github.com/Fairblock/fairyport/internal/fairyport_app"
+	"github.com/spf13/viper"
+	"os"
 	"sync"
-
-	"github.com/Fairblock/fairyport/app"
 
 	"github.com/spf13/cobra"
 )
@@ -17,37 +19,36 @@ var wg sync.WaitGroup
 // startCmd represents the start command
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "Start fairyport",
-	Long:  `Start fairyport`,
+	Short: "Start fairyport relayer",
+	Long:  `Start fairyport relayer`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		wg.Add(1)
-
-		withRelayer, _ := cmd.Flags().GetBool("with_relayer")
-
-		if withRelayer {
-			log.Println("Starting FairyPort with Hermes Relayer")
-
-			// Call relayer's Run function concurrently
-			relayerCmd.Run(cmd, []string{"start"})
-
-			go func() {
-				defer wg.Done()
-				app := app.New()
-				app.Start()
-			}()
-		} else {
-			app := app.New()
-			app.Start()
+		var cfg config.Config
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Printf("Error loading config from file: %s\n", err.Error())
+			return
 		}
 
-		// Wait for both commands to finish
-		wg.Wait()
+		viper.SetConfigName("config")
+		viper.AddConfigPath(homeDir + "/.fairyport")
+		viper.SetConfigType("yml")
 
+		if err := viper.ReadInConfig(); err != nil {
+			fmt.Printf("Error loading config from file: %s\n", err.Error())
+			return
+		}
+
+		err = viper.Unmarshal(&cfg)
+		if err != nil {
+			fmt.Printf("Error unmarshalling config from file: %s\n", err.Error())
+			return
+		}
+		app := fairyport_app.NewFairyportApp(cfg)
+		app.StartFairyport()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(startCmd)
-	startCmd.Flags().Bool("with_relayer", false, "Start hermes relayer")
 }

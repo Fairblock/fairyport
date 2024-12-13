@@ -31,8 +31,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-        rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.fairyport/config.yml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.fairyport/config.yml)")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 

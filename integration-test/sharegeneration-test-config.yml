@@ -1,0 +1,9 @@
+checkinterval: 5
+fairyringnode:
+  chainid: fairyring_test_1
+  denom: ufairy
+  grpcport: 9090
+  ip: 127.0.0.1
+  port: 16657
+  protocol: http
+privatekey: a267fb03b3e6dc381550ea0257ace31433698f16248ba111dfb75550364d31fe

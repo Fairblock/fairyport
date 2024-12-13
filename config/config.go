@@ -96,7 +96,7 @@ func (c *Config) ExportConfig() error {
 	viper.AddConfigPath(homeDir + "/.fairyport")
 	viper.SetConfigType("yml")
 
-	setInitialConfig(*c)
+	SetInitialConfig(*c)
 
 	return viper.WriteConfigAs(homeDir + "/.fairyport/config.yml")
 }
@@ -130,7 +130,7 @@ func defaultNode() Node {
 	return dNode
 }
 
-func setInitialConfig(c Config) {
+func SetInitialConfig(c Config) {
 	viper.SetDefault("FairyringNodeWS.IP", c.FairyringNodeWS.IP)
 	viper.SetDefault("FairyringNodeWS.Port", c.FairyringNodeWS.Port)
 	viper.SetDefault("FairyringNodeWS.Protocol", c.FairyringNodeWS.Protocol)

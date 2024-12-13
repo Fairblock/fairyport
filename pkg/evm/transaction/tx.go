@@ -122,6 +122,23 @@ func (q *EVMTxQueue) ProcessQueue() {
 					continue
 				}
 
+				// Only encryption key, no decryption key
+				if len(qTx.EncryptionKey) > 0 && len(qTx.DecryptionKey) == 0 {
+					exists, err := q.FairyringContract.EncryptionKeyExists(
+						&bind.CallOpts{},
+						qTx.EncryptionKey,
+					)
+					if err != nil {
+						log.Println("Error checking if encryption key exists...")
+						log.Println(err.Error())
+						continue
+					}
+					if exists {
+						log.Println("Encryption key already exists, skip...")
+						continue
+					}
+				}
+
 				evmHeight := head.Number.Uint64()
 
 				if evmHeight <= lastSubmitEVMHeight {

@@ -10,6 +10,8 @@ import (
 	"os"
 	"time"
 
+	keysharemoduletypes "github.com/Fairblock/fairyring/x/keyshare/types"
+
 	"github.com/Fairblock/fairyport/config"
 	"github.com/Fairblock/fairyport/contract"
 	"github.com/Fairblock/fairyport/internal/events"
@@ -49,6 +51,7 @@ type FairyportApp struct {
 	EVMSenderAddress  *common.Address
 	GrpcConn          *grpc.ClientConn
 	FairyClient       *rpchttp.HTTP
+	KeyshareClient    keysharemoduletypes.QueryClient
 	AuthClient        authTypes.QueryClient
 	TxClient          tx.ServiceClient
 	EVMTxQueue        *evmTx.EVMTxQueue
@@ -77,7 +80,7 @@ func NewFairyportApp(cfg config.Config) *FairyportApp {
 	if err != nil {
 		log.Fatalf("Error creating connection to Fairyring node, error: %s", err.Error())
 	}
-
+	log.Printf("Target Cosmos chain GRPC Endpoint: %s", cfg.GetGRPCEndPoint())
 	accDetails, cosmosErr := cosmosAccount.NewCosmosAccount(os.Getenv("COSMOS_MNEMONIC"), cfg, authClient)
 	if cosmosErr != nil {
 		log.Printf("Unable to initialize Cosmos Account, Disabled relaying keys to destination cosmos chain, err: %s", cosmosErr.Error())
@@ -113,6 +116,7 @@ func NewFairyportApp(cfg config.Config) *FairyportApp {
 		Cfg:               cfg,
 		GrpcConn:          conn,
 		AuthClient:        authClient,
+		KeyshareClient:    keysharemoduletypes.NewQueryClient(conn),
 		FairyClient:       fairyClient,
 		CosmosAccountInfo: accDetails,
 		EVMSenderAddress:  address,
@@ -153,6 +157,17 @@ func (app *FairyportApp) StartFairyport() {
 
 	sentPubkey := make(map[string]bool)
 
+	// If relay to EVM, relay pub key to target chain first
+	if app.RelayToEVMs {
+		pub, err := app.KeyshareClient.Pubkey(context.Background(), &keysharemoduletypes.QueryPubkeyRequest{})
+		if err == nil && pub != nil && len(pub.ActivePubkey.PublicKey) > 0 {
+			pubKeyBytes, err := hex.DecodeString(pub.ActivePubkey.PublicKey)
+			if err == nil {
+				app.EVMTxQueue.QueueEncryptionKey(pubKeyBytes, big.NewInt(int64(pub.ActivePubkey.Expiry)))
+			}
+		}
+	}
+
 	for data := range rsp {
 		// process the events
 		height, aggregatedKeyShare, pubkey, err := events.ProcessEvents(data.Events)
@@ -165,10 +180,10 @@ func (app *FairyportApp) StartFairyport() {
 			if err != nil {
 				failedBroadcastAggregatedKeyShare.Inc()
 				log.Printf("[Cosmos] [%d] | Failed to submit decryption key. Error: %s", height, err.Error())
-				continue
+			} else {
+				validBroadcastAggregatedKeyShare.Inc()
+				log.Printf("[Cosmos] [%d] Successfully Broadcasted Decryption key <%s> to Cosmos Chain", height, aggregatedKeyShare)
 			}
-			validBroadcastAggregatedKeyShare.Inc()
-			log.Printf("[Cosmos] [%d] Successfully Broadcasted Decryption key <%s> to Cosmos Chain", height, aggregatedKeyShare)
 		}
 
 		if app.RelayToEVMs {
